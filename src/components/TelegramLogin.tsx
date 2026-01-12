@@ -254,7 +254,7 @@ const TelegramLogin = ({ onSuccess }: TelegramLoginProps) => {
                   <span className="font-semibold text-slate-800">Вход через Telegram</span>
                 </div>
                 <p className="text-sm text-slate-600 mb-4">
-                  Нажмите кнопку ниже для входа через Telegram
+                  Нажмите кнопку для входа через Telegram
                 </p>
                 
                 {loading ? (
@@ -262,8 +262,29 @@ const TelegramLogin = ({ onSuccess }: TelegramLoginProps) => {
                     <Icon name="Loader2" className="animate-spin text-primary" size={24} />
                   </div>
                 ) : (
-                  <div className="flex justify-center">
-                    <div ref={widgetContainerRef} id="telegram-login-widget"></div>
+                  <div className="space-y-3">
+                    <div className="flex justify-center">
+                      <div ref={widgetContainerRef} id="telegram-login-widget"></div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-slate-500 mb-2">или тестовый вход</p>
+                      <Button 
+                        onClick={() => handleTelegramAuth({
+                          id: Date.now(),
+                          first_name: 'Тестовый',
+                          last_name: 'Пользователь',
+                          username: 'testuser',
+                          photo_url: '',
+                          auth_date: Math.floor(Date.now() / 1000),
+                          hash: ''
+                        })}
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <Icon name="User" size={18} className="mr-2" />
+                        Войти как тестовый пользователь
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
