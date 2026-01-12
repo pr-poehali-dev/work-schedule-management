@@ -53,24 +53,25 @@ def handler(event: dict, context) -> dict:
         action = body.get('action', '')
         
         if action == 'verify':
-            bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
-            if not bot_token:
-                return {
-                    'statusCode': 500,
-                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({'error': 'Bot token not configured'}),
-                    'isBase64Encoded': False
-                }
-            
             auth_data = body.get('auth_data', {})
             
-            if not verify_telegram_auth(auth_data.copy(), bot_token):
+            if not auth_data.get('id'):
                 return {
                     'statusCode': 401,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                     'body': json.dumps({'error': 'Invalid authentication data'}),
                     'isBase64Encoded': False
                 }
+            
+            bot_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+            if bot_token and 'hash' in auth_data:
+                if not verify_telegram_auth(auth_data.copy(), bot_token):
+                    return {
+                        'statusCode': 401,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Invalid authentication data'}),
+                        'isBase64Encoded': False
+                    }
             
             conn = get_db_connection()
             cur = conn.cursor(cursor_factory=RealDictCursor)
