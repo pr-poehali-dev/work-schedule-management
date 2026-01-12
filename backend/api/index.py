@@ -28,8 +28,6 @@ def handler(event: dict, context) -> dict:
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
-        schema = os.environ.get('MAIN_DB_SCHEMA', 'public')
-        cur.execute(f"SET search_path TO {schema}")
         
         query_params = event.get('queryStringParameters') or {}
         action = query_params.get('action', '')
@@ -37,7 +35,7 @@ def handler(event: dict, context) -> dict:
         if method == 'GET':
             if action == 'time_entries':
                 cur.execute('''
-                    SELECT id, worker_name, date, hours, location, status, 
+                    SELECT id, worker_name, date, hours, location, status, work_type,
                            TO_CHAR(created_at, 'YYYY-MM-DD') as created_at
                     FROM time_entries 
                     ORDER BY date DESC, created_at DESC
@@ -108,6 +106,26 @@ def handler(event: dict, context) -> dict:
                     }, default=str),
                     'isBase64Encoded': False
                 }
+            
+            elif action == 'worker_stats':
+                cur.execute('''
+                    SELECT 
+                        worker_name,
+                        COALESCE(SUM(CASE WHEN work_type = 'вывозка леса' THEN hours ELSE 0 END), 0) as forest_hours,
+                        COALESCE(SUM(CASE WHEN work_type = 'ремонт' THEN hours ELSE 0 END), 0) as repair_hours,
+                        COALESCE(SUM(CASE WHEN work_type = 'простой' THEN hours ELSE 0 END), 0) as downtime_hours,
+                        COALESCE(SUM(hours), 0) as total_hours
+                    FROM time_entries
+                    GROUP BY worker_name
+                    ORDER BY worker_name
+                ''')
+                stats = cur.fetchall()
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps([dict(s) for s in stats], default=str),
+                    'isBase64Encoded': False
+                }
         
         elif method == 'POST':
             body = json.loads(event.get('body', '{}'))
@@ -115,15 +133,16 @@ def handler(event: dict, context) -> dict:
             
             if action == 'add_time_entry':
                 cur.execute('''
-                    INSERT INTO time_entries (worker_name, date, hours, location, status)
-                    VALUES (%s, %s, %s, %s, %s)
+                    INSERT INTO time_entries (worker_name, date, hours, location, status, work_type)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                     RETURNING id
                 ''', (
                     body['worker_name'],
                     body['date'],
                     float(body['hours']),
                     body['location'],
-                    body.get('status', 'pending')
+                    body.get('status', 'pending'),
+                    body.get('work_type', 'вывозка леса')
                 ))
                 result = cur.fetchone()
                 conn.commit()

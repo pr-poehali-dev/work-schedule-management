@@ -24,6 +24,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
+import WorkerStats from '@/components/WorkerStats';
 
 interface TimeEntry {
   id: string;
@@ -449,67 +450,7 @@ const Index = () => {
             )}
 
             {activeTab === 'stats' && (
-              <div className="space-y-6 animate-fade-in">
-                <div>
-                  <h2 className="text-3xl font-bold text-slate-800 mb-2">Статистика и отчеты</h2>
-                  <p className="text-slate-600">Анализ рабочих показателей</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="p-6 bg-white shadow-sm">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Часы по локациям</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                        <span className="text-slate-700">Офис А</span>
-                        <span className="font-bold text-slate-800">8 ч</span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                        <span className="text-slate-700">Склад Б</span>
-                        <span className="font-bold text-slate-800">8 ч</span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                        <span className="text-slate-700">Удаленно</span>
-                        <span className="font-bold text-slate-800">7.5 ч</span>
-                      </div>
-                    </div>
-                  </Card>
-
-                  <Card className="p-6 bg-white shadow-sm">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Статус запросов</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                        <span className="text-slate-700">Новые</span>
-                        <Badge variant="default">1</Badge>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                        <span className="text-slate-700">В работе</span>
-                        <Badge variant="secondary">1</Badge>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                        <span className="text-slate-700">Выполнено</span>
-                        <Badge variant="outline">0</Badge>
-                      </div>
-                    </div>
-                  </Card>
-
-                  <Card className="p-6 bg-white shadow-sm md:col-span-2">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-semibold text-slate-800">Экспорт отчетов</h3>
-                      <Icon name="Download" size={20} className="text-slate-600" />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Button variant="outline" className="h-20 flex-col gap-2">
-                        <Icon name="FileText" size={24} />
-                        <span>Экспорт в PDF</span>
-                      </Button>
-                      <Button variant="outline" className="h-20 flex-col gap-2">
-                        <Icon name="Table" size={24} />
-                        <span>Экспорт в Excel</span>
-                      </Button>
-                    </div>
-                  </Card>
-                </div>
-              </div>
+              <WorkerStats />
             )}
           </div>
         </main>
