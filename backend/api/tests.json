@@ -1,0 +1,45 @@
+{
+  "tests": [
+    {
+      "name": "Get time entries",
+      "method": "GET",
+      "path": "/?action=time_entries",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "type"
+    },
+    {
+      "name": "Get chat messages",
+      "method": "GET",
+      "path": "/?action=chat_messages",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "type"
+    },
+    {
+      "name": "Get requests",
+      "method": "GET",
+      "path": "/?action=requests",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "type"
+    },
+    {
+      "name": "Add time entry",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "add_time_entry",
+        "worker_name": "Test Worker",
+        "date": "2026-01-12",
+        "hours": 8,
+        "location": "Test Office"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
