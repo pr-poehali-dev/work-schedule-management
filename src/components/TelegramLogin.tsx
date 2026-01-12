@@ -120,12 +120,12 @@ const TelegramLogin = ({ onSuccess }: TelegramLoginProps) => {
         <div className="space-y-6">
           <div className="text-center">
             <div className="bg-primary/10 p-4 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
-              <Icon name="Briefcase" size={40} className="text-primary" />
+              <Icon name="Truck" size={40} className="text-primary" />
             </div>
             
             <div className="mt-4">
-              <h1 className="text-3xl font-bold text-slate-800 mb-2">WorkTrack</h1>
-              <p className="text-slate-600">Система учета рабочего времени</p>
+              <h1 className="text-3xl font-bold text-slate-800 mb-2">Вывозка леса</h1>
+              <p className="text-slate-600">Учёт работы водителей Камаз</p>
             </div>
           </div>
 

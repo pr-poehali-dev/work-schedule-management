@@ -1,0 +1,26 @@
+{
+  "tests": [
+    {
+      "name": "Get current statistics",
+      "method": "POST",
+      "body": {
+        "action": "get_current_statistics"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "statistics": "array",
+        "period": "object"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get history periods",
+      "method": "POST",
+      "body": {
+        "action": "get_history"
+      },
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}
