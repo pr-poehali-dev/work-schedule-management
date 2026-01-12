@@ -115,15 +115,55 @@ const TelegramLogin = ({ onSuccess }: TelegramLoginProps) => {
 
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
               <div className="flex items-start gap-3">
-                <Icon name="AlertCircle" size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
-                <div className="text-xs text-slate-700">
-                  <p className="font-semibold mb-1">Настройка бота:</p>
-                  <ol className="list-decimal list-inside space-y-1 text-slate-600">
-                    <li>Откройте @BotFather в Telegram</li>
-                    <li>Отправьте команду: <code className="bg-white px-1 rounded">/setdomain</code></li>
-                    <li>Выберите вашего бота</li>
-                    <li>Укажите домен: <code className="bg-white px-1 rounded">{window.location.hostname}</code></li>
-                  </ol>
+                <Icon name="Settings" size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-slate-700 space-y-3">
+                  <div>
+                    <p className="font-bold text-amber-900 mb-2">⚙️ Быстрая настройка входа (3 минуты):</p>
+                  </div>
+
+                  <div className="bg-white p-3 rounded border border-amber-200">
+                    <p className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                      <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                      Найдите username вашего бота
+                    </p>
+                    <ul className="ml-8 space-y-1 text-xs text-slate-600">
+                      <li>• Откройте <strong>@BotFather</strong> в Telegram</li>
+                      <li>• Отправьте команду: <code className="bg-slate-100 px-2 py-0.5 rounded text-blue-600 font-mono">/mybots</code></li>
+                      <li>• Выберите вашего бота из списка</li>
+                      <li>• Скопируйте username (например: <code className="bg-slate-100 px-2 py-0.5 rounded font-mono">@mybot_name</code>)</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-white p-3 rounded border border-amber-200">
+                    <p className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                      <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                      Настройте домен для входа
+                    </p>
+                    <ul className="ml-8 space-y-1 text-xs text-slate-600">
+                      <li>• В @BotFather отправьте: <code className="bg-slate-100 px-2 py-0.5 rounded text-blue-600 font-mono">/setdomain</code></li>
+                      <li>• Выберите вашего бота</li>
+                      <li>• Укажите домен: <code className="bg-slate-100 px-2 py-0.5 rounded text-green-600 font-mono">{window.location.hostname}</code></li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-white p-3 rounded border border-amber-200">
+                    <p className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                      <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                      Обновите код (нужна помощь разработчика)
+                    </p>
+                    <div className="ml-8 space-y-2 text-xs">
+                      <p className="text-slate-600">Откройте файл <code className="bg-slate-100 px-2 py-0.5 rounded font-mono">src/components/TelegramLogin.tsx</code></p>
+                      <p className="text-slate-600">Найдите строку 67:</p>
+                      <pre className="bg-slate-900 text-slate-200 p-2 rounded overflow-x-auto text-xs font-mono">
+script.setAttribute('data-telegram-login', <span className="text-red-400">'YOUR_BOT_USERNAME'</span>);
+                      </pre>
+                      <p className="text-slate-600">Замените на:</p>
+                      <pre className="bg-slate-900 text-green-400 p-2 rounded overflow-x-auto text-xs font-mono">
+script.setAttribute('data-telegram-login', <span className="text-green-400">'mybot_name'</span>);
+                      </pre>
+                      <p className="text-amber-700 font-semibold mt-2">⚠️ Укажите username БЕЗ символа @</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
