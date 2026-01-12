@@ -54,9 +54,11 @@ def handler(event: dict, context) -> dict:
         
         if action == 'verify':
             auth_data = body.get('auth_data', {})
+            print(f"[DEBUG] Received auth_data: {auth_data}")
             
             telegram_id = auth_data.get('id')
             if telegram_id is None:
+                print("[DEBUG] Missing telegram_id")
                 return {
                     'statusCode': 401,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -66,14 +68,21 @@ def handler(event: dict, context) -> dict:
             
             bot_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
             hash_value = auth_data.get('hash', '')
+            print(f"[DEBUG] bot_token exists: {bool(bot_token)}, hash_value: {repr(hash_value)}")
+            
             if bot_token and hash_value:
+                print("[DEBUG] Starting hash verification")
                 if not verify_telegram_auth(auth_data.copy(), bot_token):
+                    print("[DEBUG] Hash verification FAILED")
                     return {
                         'statusCode': 401,
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                         'body': json.dumps({'error': 'Hash verification failed'}),
                         'isBase64Encoded': False
                     }
+                print("[DEBUG] Hash verification PASSED")
+            else:
+                print("[DEBUG] Skipping hash verification (development mode)")
             
             conn = get_db_connection()
             cur = conn.cursor(cursor_factory=RealDictCursor)
