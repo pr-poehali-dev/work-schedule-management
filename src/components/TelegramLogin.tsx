@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 
@@ -20,9 +19,7 @@ interface TelegramLoginProps {
 
 declare global {
   interface Window {
-    TelegramLoginWidget?: {
-      dataOnauth: (user: TelegramUser) => void;
-    };
+    onTelegramAuth?: (user: TelegramUser) => void;
   }
 }
 
@@ -30,23 +27,7 @@ const AUTH_URL = 'https://functions.poehali.dev/f2fc4d73-e289-4be7-81af-a21f1d42
 
 const TelegramLogin = ({ onSuccess }: TelegramLoginProps) => {
   const [loading, setLoading] = useState(false);
-  const [botUsername, setBotUsername] = useState<string>('');
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.async = true;
-    document.body.appendChild(script);
-
-    window.TelegramLoginWidget = {
-      dataOnauth: handleTelegramAuth
-    };
-
-    return () => {
-      document.body.removeChild(script);
-      delete window.TelegramLoginWidget;
-    };
-  }, []);
+  const widgetContainerRef = useRef<HTMLDivElement>(null);
 
   const handleTelegramAuth = async (user: TelegramUser) => {
     setLoading(true);
@@ -77,18 +58,24 @@ const TelegramLogin = ({ onSuccess }: TelegramLoginProps) => {
     }
   };
 
-  const handleManualLogin = () => {
-    const testUser = {
-      id: 123456789,
-      first_name: 'Тестовый',
-      last_name: 'Пользователь',
-      username: 'testuser',
-      photo_url: '',
-      auth_date: Math.floor(Date.now() / 1000),
-      hash: 'test_hash'
+  useEffect(() => {
+    window.onTelegramAuth = handleTelegramAuth;
+
+    if (widgetContainerRef.current) {
+      const script = document.createElement('script');
+      script.src = 'https://telegram.org/js/telegram-widget.js?22';
+      script.setAttribute('data-telegram-login', 'YOUR_BOT_USERNAME');
+      script.setAttribute('data-size', 'large');
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+      script.setAttribute('data-request-access', 'write');
+      script.async = true;
+      widgetContainerRef.current.appendChild(script);
+    }
+
+    return () => {
+      delete window.onTelegramAuth;
     };
-    handleTelegramAuth(testUser);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -120,16 +107,25 @@ const TelegramLogin = ({ onSuccess }: TelegramLoginProps) => {
                   <Icon name="Loader2" className="animate-spin text-primary" size={24} />
                 </div>
               ) : (
-                <div id="telegram-login-button" className="flex justify-center">
-                  <Button 
-                    onClick={handleManualLogin}
-                    className="w-full bg-[#0088cc] hover:bg-[#006699] text-white"
-                  >
-                    <Icon name="MessageSquare" size={18} className="mr-2" />
-                    Войти через Telegram
-                  </Button>
+                <div className="flex justify-center">
+                  <div ref={widgetContainerRef} id="telegram-login-widget"></div>
                 </div>
               )}
+            </div>
+
+            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+              <div className="flex items-start gap-3">
+                <Icon name="AlertCircle" size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                <div className="text-xs text-slate-700">
+                  <p className="font-semibold mb-1">Настройка бота:</p>
+                  <ol className="list-decimal list-inside space-y-1 text-slate-600">
+                    <li>Откройте @BotFather в Telegram</li>
+                    <li>Отправьте команду: <code className="bg-white px-1 rounded">/setdomain</code></li>
+                    <li>Выберите вашего бота</li>
+                    <li>Укажите домен: <code className="bg-white px-1 rounded">{window.location.hostname}</code></li>
+                  </ol>
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center gap-3 text-xs text-slate-500">
