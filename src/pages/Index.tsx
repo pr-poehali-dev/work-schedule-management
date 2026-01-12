@@ -51,7 +51,12 @@ interface Request {
   date: string;
 }
 
-const Index = () => {
+interface IndexProps {
+  user: any;
+  onLogout: () => void;
+}
+
+const Index = ({ user, onLogout }: IndexProps) => {
   const [activeTab, setActiveTab] = useState('schedule');
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([
     { id: '1', worker: 'Иван Петров', date: '2026-01-10', hours: 8, location: 'Офис А', status: 'approved' },
@@ -171,18 +176,30 @@ const Index = () => {
             </Button>
           </nav>
 
-          <div className="mt-auto pt-8">
+          <div className="mt-auto pt-8 space-y-3">
             <Card className="bg-primary/10 border-primary/20 p-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-3">
                 <Avatar>
-                  <AvatarFallback className="bg-primary text-white">ИП</AvatarFallback>
+                  <AvatarFallback className="bg-primary text-white">
+                    {user?.first_name?.[0]}{user?.last_name?.[0]}
+                  </AvatarFallback>
                 </Avatar>
-                <div className="text-sm">
-                  <p className="font-semibold">Иван Петров</p>
-                  <p className="text-xs text-muted-foreground">Сотрудник</p>
+                <div className="text-sm flex-1">
+                  <p className="font-semibold">{user?.first_name} {user?.last_name}</p>
+                  {user?.username && (
+                    <p className="text-xs text-muted-foreground">@{user.username}</p>
+                  )}
                 </div>
               </div>
             </Card>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={onLogout}
+            >
+              <Icon name="LogOut" size={16} className="mr-2" />
+              Выйти
+            </Button>
           </div>
         </aside>
 

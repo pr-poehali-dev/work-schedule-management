@@ -1,0 +1,30 @@
+{
+  "tests": [
+    {
+      "name": "Check session without token",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "check_session"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Invalid action",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "invalid_action"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "Invalid action"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
