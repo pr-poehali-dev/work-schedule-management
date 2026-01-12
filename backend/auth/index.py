@@ -8,15 +8,22 @@ from datetime import datetime, timedelta
 import secrets
 
 def verify_telegram_auth(auth_data: dict, bot_token: str) -> bool:
-    check_hash = auth_data.pop('hash', None)
+    check_hash = auth_data.get('hash')
     if not check_hash:
         return False
     
-    data_check_arr = [f"{k}={v}" for k, v in sorted(auth_data.items())]
+    # Создаём копию без hash для проверки
+    data_to_check = {k: v for k, v in auth_data.items() if k != 'hash'}
+    data_check_arr = [f"{k}={v}" for k, v in sorted(data_to_check.items())]
     data_check_string = '\n'.join(data_check_arr)
     
     secret_key = hashlib.sha256(bot_token.encode()).digest()
     calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+    
+    print(f"[DEBUG] data_check_string: {repr(data_check_string)}")
+    print(f"[DEBUG] calculated_hash: {calculated_hash}")
+    print(f"[DEBUG] received_hash: {check_hash}")
+    print(f"[DEBUG] hashes match: {calculated_hash == check_hash}")
     
     return calculated_hash == check_hash
 
@@ -72,7 +79,7 @@ def handler(event: dict, context) -> dict:
             
             if bot_token and hash_value:
                 print("[DEBUG] Starting hash verification")
-                if not verify_telegram_auth(auth_data.copy(), bot_token):
+                if not verify_telegram_auth(auth_data, bot_token):
                     print("[DEBUG] Hash verification FAILED")
                     return {
                         'statusCode': 401,
