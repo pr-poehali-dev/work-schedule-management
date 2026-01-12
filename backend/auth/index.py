@@ -55,11 +55,12 @@ def handler(event: dict, context) -> dict:
         if action == 'verify':
             auth_data = body.get('auth_data', {})
             
-            if not auth_data.get('id'):
+            telegram_id = auth_data.get('id')
+            if telegram_id is None:
                 return {
                     'statusCode': 401,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({'error': 'Invalid authentication data'}),
+                    'body': json.dumps({'error': 'Missing id in auth_data'}),
                     'isBase64Encoded': False
                 }
             
@@ -69,14 +70,13 @@ def handler(event: dict, context) -> dict:
                     return {
                         'statusCode': 401,
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'Invalid authentication data'}),
+                        'body': json.dumps({'error': 'Hash verification failed'}),
                         'isBase64Encoded': False
                     }
             
             conn = get_db_connection()
             cur = conn.cursor(cursor_factory=RealDictCursor)
             
-            telegram_id = auth_data.get('id')
             first_name = auth_data.get('first_name', '')
             last_name = auth_data.get('last_name', '')
             username = auth_data.get('username', '')
