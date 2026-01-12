@@ -65,7 +65,8 @@ def handler(event: dict, context) -> dict:
                 }
             
             bot_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-            if bot_token and 'hash' in auth_data:
+            hash_value = auth_data.get('hash', '')
+            if bot_token and hash_value:
                 if not verify_telegram_auth(auth_data.copy(), bot_token):
                     return {
                         'statusCode': 401,
