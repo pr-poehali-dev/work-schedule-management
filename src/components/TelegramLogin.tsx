@@ -270,10 +270,9 @@ const TelegramLogin = ({ onSuccess }: TelegramLoginProps) => {
             </div>
           )}
 
-            <div className="flex items-center gap-3 text-xs text-slate-500">
-              <Icon name="Shield" size={14} />
-              <span>Ваши данные защищены и не передаются третьим лицам</span>
-            </div>
+          <div className="flex items-center gap-3 text-xs text-slate-500">
+            <Icon name="Shield" size={14} />
+            <span>Ваши данные защищены и не передаются третьим лицам</span>
           </div>
         </div>
       </Card>
