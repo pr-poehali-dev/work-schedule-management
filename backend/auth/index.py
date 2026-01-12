@@ -91,7 +91,7 @@ def handler(event: dict, context) -> dict:
                     username = EXCLUDED.username,
                     photo_url = EXCLUDED.photo_url,
                     last_login = CURRENT_TIMESTAMP
-                RETURNING id, telegram_id, first_name, last_name, username
+                RETURNING id, telegram_id, first_name, last_name, username, role
             ''', (telegram_id, first_name, last_name, username, photo_url))
             
             user = cur.fetchone()
@@ -124,6 +124,66 @@ def handler(event: dict, context) -> dict:
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                 'body': json.dumps({'valid': True}),
+                'isBase64Encoded': False
+            }
+        
+        elif action == 'get_users':
+            conn = get_db_connection()
+            cur = conn.cursor(cursor_factory=RealDictCursor)
+            
+            cur.execute('''
+                SELECT id, telegram_id, first_name, last_name, username, role,
+                       TO_CHAR(created_at, 'YYYY-MM-DD') as created_at,
+                       TO_CHAR(last_login, 'YYYY-MM-DD HH24:MI') as last_login
+                FROM users
+                ORDER BY created_at DESC
+            ''')
+            users = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps([dict(u) for u in users]),
+                'isBase64Encoded': False
+            }
+        
+        elif action == 'update_role':
+            conn = get_db_connection()
+            cur = conn.cursor(cursor_factory=RealDictCursor)
+            
+            user_id = body.get('user_id')
+            new_role = body.get('role')
+            
+            if new_role not in ['admin', 'worker']:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Invalid role'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute('''
+                UPDATE users 
+                SET role = %s
+                WHERE id = %s
+                RETURNING id, telegram_id, first_name, last_name, username, role
+            ''', (new_role, user_id))
+            
+            user = cur.fetchone()
+            conn.commit()
+            
+            if not user:
+                return {
+                    'statusCode': 404,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'User not found'}),
+                    'isBase64Encoded': False
+                }
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'user': dict(user)}),
                 'isBase64Encoded': False
             }
         

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import WorkerStats from '@/components/WorkerStats';
+import AdminPanel from '@/components/AdminPanel';
 
 interface TimeEntry {
   id: string;
@@ -174,6 +175,16 @@ const Index = ({ user, onLogout }: IndexProps) => {
               <Icon name="BarChart3" size={18} className="mr-2" />
               Статистика
             </Button>
+            {user?.role === 'admin' && (
+              <Button
+                variant={activeTab === 'admin' ? 'default' : 'ghost'}
+                className="w-full justify-start"
+                onClick={() => setActiveTab('admin')}
+              >
+                <Icon name="Shield" size={18} className="mr-2" />
+                Управление
+              </Button>
+            )}
           </nav>
 
           <div className="mt-auto pt-8 space-y-3">
@@ -188,6 +199,12 @@ const Index = ({ user, onLogout }: IndexProps) => {
                   <p className="font-semibold">{user?.first_name} {user?.last_name}</p>
                   {user?.username && (
                     <p className="text-xs text-muted-foreground">@{user.username}</p>
+                  )}
+                  {user?.role === 'admin' && (
+                    <Badge variant="default" className="bg-purple-600 text-white mt-1">
+                      <Icon name="Crown" size={10} className="mr-1" />
+                      Админ
+                    </Badge>
                   )}
                 </div>
               </div>
@@ -212,43 +229,45 @@ const Index = ({ user, onLogout }: IndexProps) => {
                   <p className="text-slate-600">Отмечайте рабочие часы и местоположение</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-slate-600 mb-1">Всего часов</p>
-                        <p className="text-3xl font-bold text-slate-800">{totalHours}</p>
+                {user?.role === 'admin' && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-slate-600 mb-1">Всего часов</p>
+                          <p className="text-3xl font-bold text-slate-800">{totalHours}</p>
+                        </div>
+                        <div className="bg-blue-100 p-3 rounded-lg">
+                          <Icon name="Clock" size={24} className="text-blue-600" />
+                        </div>
                       </div>
-                      <div className="bg-blue-100 p-3 rounded-lg">
-                        <Icon name="Clock" size={24} className="text-blue-600" />
-                      </div>
-                    </div>
-                  </Card>
+                    </Card>
 
-                  <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-slate-600 mb-1">Утверждено</p>
-                        <p className="text-3xl font-bold text-green-600">{approvedHours}</p>
+                    <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-slate-600 mb-1">Утверждено</p>
+                          <p className="text-3xl font-bold text-green-600">{approvedHours}</p>
+                        </div>
+                        <div className="bg-green-100 p-3 rounded-lg">
+                          <Icon name="CheckCircle" size={24} className="text-green-600" />
+                        </div>
                       </div>
-                      <div className="bg-green-100 p-3 rounded-lg">
-                        <Icon name="CheckCircle" size={24} className="text-green-600" />
-                      </div>
-                    </div>
-                  </Card>
+                    </Card>
 
-                  <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-slate-600 mb-1">Сотрудников</p>
-                        <p className="text-3xl font-bold text-slate-800">12</p>
+                    <Card className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-slate-600 mb-1">Сотрудников</p>
+                          <p className="text-3xl font-bold text-slate-800">12</p>
+                        </div>
+                        <div className="bg-purple-100 p-3 rounded-lg">
+                          <Icon name="Users" size={24} className="text-purple-600" />
+                        </div>
                       </div>
-                      <div className="bg-purple-100 p-3 rounded-lg">
-                        <Icon name="Users" size={24} className="text-purple-600" />
-                      </div>
-                    </div>
-                  </Card>
-                </div>
+                    </Card>
+                  </div>
+                )}
 
                 <Card className="p-6 bg-white shadow-sm">
                   <div className="flex items-center justify-between mb-6">
@@ -468,6 +487,10 @@ const Index = ({ user, onLogout }: IndexProps) => {
 
             {activeTab === 'stats' && (
               <WorkerStats />
+            )}
+
+            {activeTab === 'admin' && user?.role === 'admin' && (
+              <AdminPanel />
             )}
           </div>
         </main>
